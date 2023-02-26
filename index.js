@@ -18,6 +18,9 @@ import {
   query,
   orderBy,
   onSnapshot,
+  doc,
+  setDoc,
+  where,
 } from 'firebase/firestore';
 
 import * as firebaseui from 'firebaseui';
@@ -90,22 +93,22 @@ async function main() {
   });
 
   // Listen to the current Auth state
-  
-onAuthStateChanged(auth, user => {
-  if (user) {
-    startRsvpButton.textContent = 'LOGOUT';
-    // Show guestbook to logged-in users
-    guestbookContainer.style.display = 'block';
-    // Subscribe to the guestbook collection
-    subscribeGuestbook();
-  } else {
-    startRsvpButton.textContent = 'RSVP';
-    // Hide guestbook for non-logged-in users
-    guestbookContainer.style.display = 'none';
-    // Unsubscribe from the guestbook collection
-    unsubscribeGuestbook();
-  }
-});
+
+  onAuthStateChanged(auth, (user) => {
+    if (user) {
+      startRsvpButton.textContent = 'LOGOUT';
+      // Show guestbook to logged-in users
+      guestbookContainer.style.display = 'block';
+      // Subscribe to the guestbook collection
+      subscribeGuestbook();
+    } else {
+      startRsvpButton.textContent = 'RSVP';
+      // Hide guestbook for non-logged-in users
+      guestbookContainer.style.display = 'none';
+      // Unsubscribe from the guestbook collection
+      unsubscribeGuestbook();
+    }
+  });
   // Listen to the form submission
   form.addEventListener('submit', async (e) => {
     // Prevent the default form redirect
@@ -138,28 +141,28 @@ onAuthStateChanged(auth, user => {
   });
 
   // Listen to guestbook updates
-function subscribeGuestbook() {
-  const q = query(collection(db, 'guestbook'), orderBy('timestamp', 'desc'));
-  guestbookListener = onSnapshot(q, snaps => {
-    // Reset page
-    guestbook.innerHTML = '';
-    // Loop through documents in database
-    snaps.forEach(doc => {
-      // Create an HTML entry for each document and add it to the chat
-      const entry = document.createElement('p');
-      entry.textContent = doc.data().name + ': ' + doc.data().text;
-      guestbook.appendChild(entry);
+  function subscribeGuestbook() {
+    const q = query(collection(db, 'guestbook'), orderBy('timestamp', 'desc'));
+    guestbookListener = onSnapshot(q, (snaps) => {
+      // Reset page
+      guestbook.innerHTML = '';
+      // Loop through documents in database
+      snaps.forEach((doc) => {
+        // Create an HTML entry for each document and add it to the chat
+        const entry = document.createElement('p');
+        entry.textContent = doc.data().name + ': ' + doc.data().text;
+        guestbook.appendChild(entry);
+      });
     });
-  });
-}
-
-// Unsubscribe from guestbook updates
-function unsubscribeGuestbook() {
-  if (guestbookListener != null) {
-    guestbookListener();
-    guestbookListener = null;
   }
-}
+
+  // Unsubscribe from guestbook updates
+  function unsubscribeGuestbook() {
+    if (guestbookListener != null) {
+      guestbookListener();
+      guestbookListener = null;
+    }
+  }
 }
 
 main();
