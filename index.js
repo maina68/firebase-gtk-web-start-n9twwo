@@ -4,7 +4,7 @@ import './style.css';
 import { initializeApp } from 'firebase/app';
 
 // Add the Firebase products and methods that you want to use
-import {} from 'firebase/auth';
+import {getAuth, EmailAuthProvider} from 'firebase/auth';
 import {} from 'firebase/firestore';
 
 import * as firebaseui from 'firebaseui';
@@ -27,10 +27,20 @@ let db, auth;
 
 async function main() {
   // Add Firebase project configuration object here
-  const firebaseConfig = {};
+  const firebaseConfig = {
+    apiKey: "random-unique-string",
+    authDomain: "your-projectId.firebaseapp.com",
+    databaseURL: "https://your-projectId.firebaseio.com",
+    projectId: "your-projectId",
+    storageBucket: "your-projectId.appspot.com",
+    messagingSenderId: "random-unique-string",
+    appId: "random-unique-string",
+  };
 
-  // initializeApp(firebaseConfig);
-
+  //initializeApp
+  initializeApp(firebaseConfig);
+  auth = getAuth();
+  
   // FirebaseUI config
   const uiConfig = {
     credentialHelper: firebaseui.auth.CredentialHelper.NONE,
@@ -48,5 +58,15 @@ async function main() {
   };
 
   // const ui = new firebaseui.auth.AuthUI(auth);
+
+  // Initialize the FirebaseUI widget using Firebase
+  const ui = new firebaseui.auth.AuthUI(auth);
+
+   // Listen to RSVP button clicks
+   startRsvpButton.addEventListener("click",
+   () => {
+        ui.start("#firebaseui-auth-container", uiConfig);
+  });
 }
+
 main();
