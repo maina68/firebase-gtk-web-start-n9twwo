@@ -4,7 +4,13 @@ import './style.css';
 import { initializeApp } from 'firebase/app';
 
 // Add the Firebase products and methods that you want to use
-import { getAuth, EmailAuthProvider } from 'firebase/auth';
+import {
+  getAuth,
+  EmailAuthProvider,
+  signOut,
+  onAuthStateChanged,
+} from 'firebase/auth';
+
 import {} from 'firebase/firestore';
 
 import * as firebaseui from 'firebaseui';
@@ -64,8 +70,24 @@ async function main() {
   const ui = new firebaseui.auth.AuthUI(auth);
 
   // Listen to RSVP button clicks
+  // Called when the user clicks the RSVP button
   startRsvpButton.addEventListener('click', () => {
-    ui.start('#firebaseui-auth-container', uiConfig);
+    if (auth.currentUser) {
+      // User is signed in; allows user to sign out
+      signOut(auth);
+    } else {
+      // No user is signed in; allows user to sign in
+      ui.start('#firebaseui-auth-container', uiConfig);
+    }
+  });
+
+  // Listen to the current Auth state
+  onAuthStateChanged(auth, (user) => {
+    if (user) {
+      startRsvpButton.textContent = 'LOGOUT';
+    } else {
+      startRsvpButton.textContent = 'RSVP';
+    }
   });
 }
 
