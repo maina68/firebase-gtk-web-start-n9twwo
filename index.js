@@ -163,6 +163,33 @@ async function main() {
       guestbookListener = null;
     }
   }
+  // Listen to RSVP responses
+  rsvpYes.onclick = async () => {
+    // Get a reference to the user's document in the attendees collection
+    const userRef = doc(db, 'attendees', auth.currentUser.uid);
+
+    // If they RSVP'd yes, save a document with attendi()ng: true
+    try {
+      await setDoc(userRef, {
+        attending: true,
+      });
+    } catch (e) {
+      console.error(e);
+    }
+  };
+  rsvpNo.onclick = async () => {
+    // Get a reference to the user's document in the attendees collection
+    const userRef = doc(db, 'attendees', auth.currentUser.uid);
+
+    // If they RSVP'd yes, save a document with attending: true
+    try {
+      await setDoc(userRef, {
+        attending: false,
+      });
+    } catch (e) {
+      console.error(e);
+    }
+  };
 }
 
 main();
