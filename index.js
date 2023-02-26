@@ -90,17 +90,22 @@ async function main() {
   });
 
   // Listen to the current Auth state
-  onAuthStateChanged(auth, (user) => {
-    if (user) {
-      startRsvpButton.textContent = 'LOGOUT';
-      // Show guestbook to logged-in users
-      guestbookContainer.style.display = 'block';
-    } else {
-      startRsvpButton.textContent = 'RSVP';
-      // Hide guestbook for non-logged-in users
-      guestbookContainer.style.display = 'none';
-    }
-  });
+  
+onAuthStateChanged(auth, user => {
+  if (user) {
+    startRsvpButton.textContent = 'LOGOUT';
+    // Show guestbook to logged-in users
+    guestbookContainer.style.display = 'block';
+    // Subscribe to the guestbook collection
+    subscribeGuestbook();
+  } else {
+    startRsvpButton.textContent = 'RSVP';
+    // Hide guestbook for non-logged-in users
+    guestbookContainer.style.display = 'none';
+    // Unsubscribe from the guestbook collection
+    unsubscribeGuestbook();
+  }
+});
   // Listen to the form submission
   form.addEventListener('submit', async (e) => {
     // Prevent the default form redirect
@@ -146,6 +151,14 @@ function subscribeGuestbook() {
       guestbook.appendChild(entry);
     });
   });
+}
+
+// Unsubscribe from guestbook updates
+function unsubscribeGuestbook() {
+  if (guestbookListener != null) {
+    guestbookListener();
+    guestbookListener = null;
+  }
 }
 }
 
